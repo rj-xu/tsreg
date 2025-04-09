@@ -1,15 +1,19 @@
-export function BitField(bits: [number, number]) {
-    return function (target: any, key: string) {
+import { Bit } from "./mask.ts";
+import { Reg } from "./reg.ts";
+
+export function BitField<T extends Reg>(s_or_range: number | readonly [number, number], l = 1, base = 0) {
+    const BIT = new Bit(s_or_range, l, base);
+
+    return function (target: Reg, key: string) {
         Object.defineProperty(target, key, {
-            get() {
-                return this.read(bits);
+            get(this: T) {
+                return this.read(BIT);
             },
-            set(val: number) {
-                this.write(val, bits);
+            set(this: T, val: number) {
+                this.write(val, BIT);
             },
             enumerable: true,
             configurable: true,
         });
     };
 }
-
